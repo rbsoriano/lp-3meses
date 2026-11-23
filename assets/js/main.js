@@ -79,17 +79,54 @@ function normalizeWhatsapp(raw) {
 }
 
 // Retorna null se válido, ou a mensagem de erro específica
-function getWhatsappError(raw) {
+function getWhatsappError(raw, isTyping = false) {
   const digits = normalizeWhatsapp(raw);
-  if (!digits) return 'Por favor, informe seu WhatsApp com DDD.';
-  if (digits.length === 10) return 'Esse número parece um telefone fixo ou está sem o 9. Informe seu celular com WhatsApp (ex: (11) 98765-4321).';
-  if (digits.length < 11) return 'Número incompleto. Informe DDD + 9 dígitos (ex: (11) 98765-4321).';
-  if (digits.length > 11) return 'Número com dígitos demais. Informe apenas DDD + 9 dígitos.';
-  if (!VALID_DDDS.has(Number(digits.slice(0, 2)))) return 'DDD inválido. Verifique o código de área.';
-  if (digits[2] !== '9') return 'Informe um número de celular (WhatsApp). Celulares começam com 9 após o DDD.';
+  if (!digits) {
+    return isTyping ? null : 'Por favor, informe seu WhatsApp com DDD.';
+  }
+
+  // Validação do DDD (primeiros 2 dígitos)
+  if (digits.length >= 2) {
+    const ddd = Number(digits.slice(0, 2));
+    if (!VALID_DDDS.has(ddd)) {
+      return 'DDD inválido. Informe um código de área brasileiro válido.';
+    }
+  }
+
+  // Validação estrita de WhatsApp: OBRIGATÓRIO começar com 9 após o DDD
+  // Telefones fixos começam com 2, 3, 4 ou 5 e NÃO possuem WhatsApp
+  if (digits.length >= 3 && digits[2] !== '9') {
+    return 'WhatsApp inválido. Apenas celulares com WhatsApp são aceitos (deve começar com 9 após o DDD). Telefones fixos não são aceitos.';
+  }
+
+  // Durante a digitação, se ainda não completou os 11 dígitos, não bloqueia
+  if (isTyping) {
+    if (digits.length > 11) {
+      return 'Número com dígitos demais. Informe apenas DDD + 9 dígitos.';
+    }
+    return null;
+  }
+
+  // Validação estrita completa (ao sair do campo ou submeter)
+  if (digits.length < 11) {
+    return 'Número incompleto. Digite seu celular com DDD e 9 dígitos (ex: (83) 98765-4321).';
+  }
+  if (digits.length > 11) {
+    return 'Número com dígitos demais. Digite apenas DDD + 9 dígitos.';
+  }
+  if (digits[2] !== '9') {
+    return 'WhatsApp inválido. Celulares no Brasil começam com 9 após o DDD.';
+  }
+
   const local = digits.slice(3); // 8 dígitos após o 9
-  if (local[0] === '0') return 'Número de WhatsApp inválido. Verifique os dígitos.';
-  if (/^(\d)\1+$/.test(local)) return 'Número de WhatsApp inválido. Verifique os dígitos.';
+  if (local[0] === '0') {
+    return 'Número de WhatsApp inválido. Verifique os dígitos.';
+  }
+  // Bloqueia números com todos os dígitos iguais (ex: 99999999999, 11111111111)
+  if (/^(\d)\1+$/.test(digits)) {
+    return 'Número de WhatsApp inválido. Digite um número real.';
+  }
+
   return null;
 }
 
@@ -103,7 +140,41 @@ function formatWhatsapp(value) {
 
 function initPhoneMask() {
   const phoneInput = document.getElementById('lead-phone');
+  const errorMsg = document.getElementById('phone-error-msg');
+  const phoneWrapper = phoneInput ? phoneInput.closest('.phone-input-wrapper') : null;
   if (!phoneInput) return;
+
+  function validateLive(isTyping = true) {
+    const raw = phoneInput.value;
+    const digits = normalizeWhatsapp(raw);
+    const err = getWhatsappError(raw, isTyping);
+
+    if (err) {
+      if (phoneWrapper) {
+        phoneWrapper.classList.add('has-error');
+        phoneWrapper.classList.remove('is-valid');
+      }
+      if (errorMsg) {
+        errorMsg.textContent = err;
+        errorMsg.classList.add('visible');
+      }
+      return false;
+    } else {
+      if (phoneWrapper) {
+        phoneWrapper.classList.remove('has-error');
+        if (digits.length === 11) {
+          phoneWrapper.classList.add('is-valid');
+        } else {
+          phoneWrapper.classList.remove('is-valid');
+        }
+      }
+      if (errorMsg) {
+        errorMsg.textContent = '';
+        errorMsg.classList.remove('visible');
+      }
+      return true;
+    }
+  }
 
   // Bloqueia qualquer tecla que não seja número (mantém atalhos e navegação)
   phoneInput.addEventListener('keydown', (e) => {
@@ -111,16 +182,26 @@ function initPhoneMask() {
     if (!/\d/.test(e.key)) e.preventDefault();
   });
 
-  // Ao colar, aceita formatos como +55 11 98765-4321 e mantém só os dígitos
+  // Ao colar
   phoneInput.addEventListener('paste', (e) => {
     e.preventDefault();
     const pasted = (e.clipboardData || window.clipboardData).getData('text');
     phoneInput.value = formatWhatsapp(normalizeWhatsapp(pasted));
-    phoneInput.dispatchEvent(new Event('input', { bubbles: true }));
+    validateLive(false);
   });
 
+  // Ao digitar
   phoneInput.addEventListener('input', (e) => {
-    e.target.value = formatWhatsapp(normalizeWhatsapp(e.target.value));
+    const formatted = formatWhatsapp(normalizeWhatsapp(e.target.value));
+    e.target.value = formatted;
+    validateLive(true);
+  });
+
+  // Ao sair do campo (blur)
+  phoneInput.addEventListener('blur', () => {
+    if (phoneInput.value.trim().length > 0) {
+      validateLive(false);
+    }
   });
 }
 
@@ -449,6 +530,13 @@ function initLeadForm() {
   const clearError = (inputEl, wrapperEl) => {
     if (inputEl) inputEl.classList.remove('has-error');
     if (wrapperEl) wrapperEl.classList.remove('has-error');
+    if (inputEl === phoneInput) {
+      const phoneErrorMsgEl = document.getElementById('phone-error-msg');
+      if (phoneErrorMsgEl) {
+        phoneErrorMsgEl.textContent = '';
+        phoneErrorMsgEl.classList.remove('visible');
+      }
+    }
     if (feedback && !form.querySelectorAll('.has-error').length) {
       feedback.style.display = 'none';
       feedback.className = 'form-feedback';
@@ -523,8 +611,16 @@ function initLeadForm() {
     // 3. Validação do WhatsApp (celular brasileiro: DDD válido + 9 + 8 dígitos)
     if (phoneError) {
       errors.push('WhatsApp');
-      if (phoneWrapper) phoneWrapper.classList.add('has-error');
+      if (phoneWrapper) {
+        phoneWrapper.classList.add('has-error');
+        phoneWrapper.classList.remove('is-valid');
+      }
       if (phoneInput) phoneInput.classList.add('has-error');
+      const phoneErrorMsgEl = document.getElementById('phone-error-msg');
+      if (phoneErrorMsgEl) {
+        phoneErrorMsgEl.textContent = phoneError;
+        phoneErrorMsgEl.classList.add('visible');
+      }
       if (!firstInvalid) firstInvalid = phoneInput;
     }
 
