@@ -133,16 +133,16 @@ button, input, select, textarea {
 }
 
 /* ==========================================================================
-   HEADER / LOGO (dentro do card)
+   HEADER / LOGO (dentro do card, no topo esquerdo)
    ========================================================================== */
 
 .hero-header {
+  position: absolute;
+  top: 38px;
+  left: 46px;
+  z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
 }
 
 .brand-logo {
@@ -169,24 +169,25 @@ button, input, select, textarea {
 }
 
 /* ==========================================================================
-   HERO CONTENT — 2 COLUNAS
+   HERO CONTENT — 2 COLUNAS (TEXTO CENTRALIZADO IGUAL AO MODELO)
    ========================================================================== */
 
 .hero-grid {
   display: grid;
   grid-template-columns: 1.14fr 0.86fr;
   gap: 36px;
-  align-items: end;
+  align-items: center;
+  min-height: 530px;
   position: relative;
   z-index: 1;
 }
 
-/* Coluna da Esquerda: Headline no ponto exato da referência */
+/* Coluna da Esquerda: Headline perfeitamente centralizada verticalmente */
 .hero-left {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding-bottom: 8px;
+  justify-content: center;
+  align-self: center;
 }
 
 .hero-title {
@@ -213,6 +214,7 @@ button, input, select, textarea {
 .hero-right {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .lead-form-card {
@@ -1287,6 +1289,7 @@ button, input, select, textarea {
   }
 
   .hero-header {
+    position: static;
     margin-bottom: 24px;
   }
 
