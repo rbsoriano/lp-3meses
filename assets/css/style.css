@@ -211,6 +211,10 @@ button, input, select, textarea {
   display: inline;
 }
 
+.mobile-br {
+  display: none;
+}
+
 /* Coluna da Direita: Card de Formulário integrado */
 .hero-right {
   flex: 0 0 385px;
@@ -1307,33 +1311,49 @@ button, input, select, textarea {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .hero-wrapper {
-    padding: 12px 10px 12px 10px;
+    padding: 16px 12px 32px 12px;
     overflow: hidden;
     contain: paint;
-  }
-
-  .hero-card {
-    padding: 24px 16px 32px 16px;
-    border-radius: 20px;
+    background-color: #050505;
   }
 
   .hero-container {
     width: 100%;
-    max-width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
     box-sizing: border-box;
+  }
+
+  .hero-card {
+    padding: 26px 18px 28px 18px;
+    border-radius: 28px;
+    background: #0d0f11;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
   }
 
   .hero-header {
     position: static;
-    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 22px;
+    width: 100%;
+  }
+
+  .brand-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 
   .hero-grid {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 22px;
     width: 100%;
     max-width: 100%;
     min-height: auto;
@@ -1355,12 +1375,19 @@ button, input, select, textarea {
     display: none;
   }
 
+  .mobile-br {
+    display: inline;
+  }
+
   .hero-title {
-    font-size: 26px;
-    line-height: 1.22;
-    margin-bottom: 16px;
+    font-size: clamp(23px, 6.4vw, 27px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.7px;
+    margin-bottom: 0;
     word-break: normal;
     overflow-wrap: break-word;
+    text-align: left;
   }
 
   .floating-cta-btn {
@@ -1373,7 +1400,10 @@ button, input, select, textarea {
   .lead-form-card {
     max-width: 100%;
     width: 100%;
-    padding: 22px 14px;
+    background: #141517;
+    border-radius: 20px;
+    padding: 22px 18px 20px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
     box-sizing: border-box;
     overflow: hidden;
   }
