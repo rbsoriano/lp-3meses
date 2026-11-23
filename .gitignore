@@ -1,6 +1,7 @@
 .DS_Store
 _reference/
 dist/
+public/
 *.log
 *.png.backup
 FireShot*

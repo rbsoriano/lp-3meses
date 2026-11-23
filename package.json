@@ -4,7 +4,7 @@
   "private": true,
   "description": "Landing Page Doha - 3 Meses",
   "scripts": {
-    "build": "mkdir -p dist && cp -r index.html assets dist/"
+    "build": "mkdir -p dist public && cp -r index.html assets dist/ && cp -r index.html assets public/"
   }
 }
 
