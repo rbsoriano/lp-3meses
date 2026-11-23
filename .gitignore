@@ -1,0 +1,6 @@
+.DS_Store
+_reference/
+dist/
+*.log
+*.png.backup
+FireShot*
