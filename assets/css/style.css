@@ -116,17 +116,17 @@ button, input, select, textarea {
 }
 
 .hero-container {
-  max-width: 1040px;
+  max-width: 900px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
 }
 
-/* Card principal escuro arredondado */
+/* Card principal escuro arredondado e compacto */
 .hero-card {
   background: #0d0f11;
-  border-radius: 28px;
-  padding: 38px 46px 42px 46px;
+  border-radius: 26px;
+  padding: 34px 40px 36px 40px;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
@@ -138,8 +138,8 @@ button, input, select, textarea {
 
 .hero-header {
   position: absolute;
-  top: 38px;
-  left: 46px;
+  top: 34px;
+  left: 40px;
   z-index: 2;
   display: flex;
   align-items: center;
@@ -169,25 +169,26 @@ button, input, select, textarea {
 }
 
 /* ==========================================================================
-   HERO CONTENT — 2 COLUNAS (TEXTO CENTRALIZADO IGUAL AO MODELO)
+   HERO CONTENT — 2 COLUNAS (TEXTO PRÓXIMO AO FORMULÁRIO E CENTRALIZADO)
    ========================================================================== */
 
 .hero-grid {
-  display: grid;
-  grid-template-columns: 1.14fr 0.86fr;
-  gap: 36px;
+  display: flex;
   align-items: center;
-  min-height: 530px;
+  justify-content: space-between;
+  gap: 28px;
+  min-height: 510px;
   position: relative;
   z-index: 1;
 }
 
-/* Coluna da Esquerda: Headline perfeitamente centralizada verticalmente */
+/* Coluna da Esquerda: Headline próxima do formulário e centralizada */
 .hero-left {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-self: center;
+  max-width: 420px;
 }
 
 .hero-title {
@@ -212,14 +213,14 @@ button, input, select, textarea {
 
 /* Coluna da Direita: Card de Formulário integrado */
 .hero-right {
+  flex: 0 0 380px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
 
 .lead-form-card {
-  width: 100%;
-  max-width: 390px;
+  width: 380px;
   background: #141517;
   border-radius: 18px;
   padding: 24px 22px 22px 22px;
@@ -1294,15 +1295,24 @@ button, input, select, textarea {
   }
 
   .hero-grid {
-    grid-template-columns: 1fr;
-    gap: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
     width: 100%;
     max-width: 100%;
     min-height: auto;
   }
 
   .hero-left {
+    max-width: 100%;
+    width: 100%;
     padding-top: 0;
+  }
+
+  .hero-right {
+    flex: 0 0 auto;
+    width: 100%;
+    justify-content: center;
   }
 
   .desktop-br {
